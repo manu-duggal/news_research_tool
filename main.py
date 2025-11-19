@@ -176,7 +176,11 @@ def generate_pdf_report(summaries):
         elements.append(Paragraph(f"URL: {article['url']}", styles["Normal"]))
         elements.append(Spacer(1, 10))
 
-        elements.append(Paragraph("<b>Summary</b>", styles["Heading3"]))
+        clean_summary = article['summary']
+        clean_summary = clean_summary.replace("**", "")  # remove markdown bold markers
+        clean_summary = clean_summary.replace("\n", "<br/>")  # newlines to HTML breaks
+        elements.append(Paragraph(clean_summary, styles["Normal"]))
+
         elements.append(Paragraph(article['summary'].replace("\n", "<br/>"), styles["Normal"]))
         elements.append(Spacer(1, 20))
 

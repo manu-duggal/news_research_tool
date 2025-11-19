@@ -901,13 +901,13 @@ if "summaries" in st.session_state:
 
     summaries = st.session_state["summaries"]
 
-    st.subheader("📝 Article Summaries")
+    st.subheader("Article Summaries")
 
     tabs = st.tabs([f"Article {i+1}" for i in range(len(summaries))])
 
     for idx, tab in enumerate(tabs):
         with tab:
-            st.markdown(f"### 🌐 Source: {summaries[idx]['url']}")
+            st.markdown(f"#### Source: {summaries[idx]['url']}")
             st.markdown(f"""
             <div class="summary-card">
                 {summaries[idx]['summary']}
@@ -958,7 +958,7 @@ def generate_pdf_report(summaries):
 if "summaries" in st.session_state:
     pdf_buffer = generate_pdf_report(st.session_state["summaries"])
     st.download_button(
-        label="📄 Download PDF Report",
+        label="Download PDF Report",
         data=pdf_buffer,
         file_name="news_report.pdf",
         mime="application/pdf"
@@ -969,7 +969,7 @@ if "summaries" in st.session_state:
 # ============================================================
 # QUESTION ANSWERING
 # ============================================================
-st.subheader("🔍 Ask a Question About the Articles:")
+st.subheader(" Ask a Question About the Articles:")
 query = st.text_input("Your Question:")
 
 if query:

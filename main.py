@@ -1079,7 +1079,16 @@ elif "page" not in st.session_state:
 # ============================================================
 def show_landing_page():
     st.html("""
-<div style="
+<style>
+/* PUSH CARD DOWN ON MOBILE */
+@media (max-width: 600px) {
+    .landing-wrapper {
+        padding-top: 70px !important;  /* adjust this number */
+    }
+}
+</style>
+
+<div class="landing-wrapper" style="
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -1130,7 +1139,6 @@ def show_landing_page():
 """)
 
     st.stop()
-
 
 
 # ============================================================

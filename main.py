@@ -1078,7 +1078,7 @@ elif "page" not in st.session_state:
 # LANDING PAGE  (PATCHED)
 # ============================================================
 def show_landing_page():
-    st.markdown(
+    st.html(
 """
 <div class="landing-container">
 

@@ -894,12 +894,12 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 
 # ============================================================
-#  GLOBAL LUXURY STYLING  (GRADIENT + GLASS + TABS + HIDING BUTTON)
+#  GLOBAL STYLING (GRADIENT + GLASS + TABS + HIDE BUTTON)
 # ============================================================
 st.markdown("""
 <style>
 
-    /* Hide the internal Streamlit button */
+    /* Hide hidden Streamlit button */
     button[aria-label="start_app_internal"] {
         display: none !important;
     }
@@ -922,6 +922,7 @@ st.markdown("""
         100% {background-position: 0% 50%;}
     }
 
+    /* Sidebar title */
     .sidebar-title {
         font-size: 1.25rem;
         font-weight: 700;
@@ -1020,12 +1021,11 @@ st.markdown("""
         background: linear-gradient(90deg, #6b2dff, #ff1493);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 1.2rem;
     }
     .landing-subtitle {
         font-size: 1.25rem;
         opacity: 0.8;
-        margin-bottom: 2.4rem;
+        margin-bottom: 2rem;
     }
     .feature-box {
         background: rgba(255,255,255,0.35);
@@ -1033,9 +1033,8 @@ st.markdown("""
         border-radius: 18px;
         padding: 1rem 1.4rem;
         border: 1px solid rgba(255,255,255,0.4);
-        box-shadow: 0px 6px 16px rgba(120,50,220,0.15);
         margin-bottom: 1rem;
-        font-size: 1rem;
+        box-shadow: 0px 6px 16px rgba(120,50,220,0.15);
     }
     .glass-button {
         padding: 0.9rem 2rem;
@@ -1101,7 +1100,7 @@ def show_landing_page():
             <div class="feature-box">Instant PDF report creation</div>
 
             <button class="glass-button"
-                onclick="document.querySelector('button[aria-label=\'start_app_internal\']').click();">
+                onclick="document.querySelector('button[aria-label=\\"start_app_internal\\"]').click();">
                 Get Started
             </button>
 
@@ -1285,8 +1284,9 @@ def show_main_app():
         st.markdown(f"<div class='small-source'>{res['sources']}</div>", unsafe_allow_html=True)
 
 
+
 # ============================================================
-# PAGE ROUTER
+# ROUTER
 # ============================================================
 if st.session_state.page == "landing":
     show_landing_page()

@@ -894,17 +894,12 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 
 # ============================================================
-#  GLOBAL STYLING (GRADIENT + GLASS + TABS + HIDE BUTTON)
+#  GLOBAL STYLING  (GRADIENT + GLASS + TABS)
 # ============================================================
 st.markdown("""
 <style>
 
-    /* Hide hidden Streamlit button */
-    button[aria-label="start_app_internal"] {
-        display: none !important;
-    }
-
-    /* Force black text always */
+    /* Force black text for all users incl. dark mode */
     html, body, [class*="st-"], .stApp {
         color: #1a1a1a !important;
     }
@@ -916,13 +911,13 @@ st.markdown("""
         animation: gradientFlow 12s ease infinite;
         font-family: "Inter", sans-serif;
     }
+
     @keyframes gradientFlow {
         0% {background-position: 0% 50%;}
         50% {background-position: 100% 50%;}
         100% {background-position: 0% 50%;}
     }
 
-    /* Sidebar title */
     .sidebar-title {
         font-size: 1.25rem;
         font-weight: 700;
@@ -1021,11 +1016,12 @@ st.markdown("""
         background: linear-gradient(90deg, #6b2dff, #ff1493);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        margin-bottom: 1.2rem;
     }
     .landing-subtitle {
         font-size: 1.25rem;
         opacity: 0.8;
-        margin-bottom: 2rem;
+        margin-bottom: 2.4rem;
     }
     .feature-box {
         background: rgba(255,255,255,0.35);
@@ -1035,8 +1031,11 @@ st.markdown("""
         border: 1px solid rgba(255,255,255,0.4);
         margin-bottom: 1rem;
         box-shadow: 0px 6px 16px rgba(120,50,220,0.15);
+        font-size: 1rem;
     }
-    .glass-button {
+    .glass-button, .glass-link {
+        display: inline-block;
+        text-decoration: none;
         padding: 0.9rem 2rem;
         border-radius: 14px;
         background: rgba(255,255,255,0.25);
@@ -1050,7 +1049,7 @@ st.markdown("""
         margin-top: 1rem;
         box-shadow: 0px 8px 20px rgba(120,50,220,0.3);
     }
-    .glass-button:hover {
+    .glass-button:hover, .glass-link:hover {
         transform: translateY(-4px);
         background: rgba(255,255,255,0.45);
         box-shadow: 0px 10px 28px rgba(120,50,220,0.45);
@@ -1066,23 +1065,21 @@ st.markdown("""
 
 
 # ============================================================
-# PAGE STATE
+# PAGE STATE via query params (robust)
 # ============================================================
-if "page" not in st.session_state:
-    st.session_state.page = "landing"
+# If user navigates to ?page=app, use that to set session state.
+params = st.experimental_get_query_params()
+if "page" in params and params["page"] and params["page"][0] == "app":
+    st.session_state["page"] = "app"
+elif "page" not in st.session_state:
+    # preserve existing session behavior if not provided
+    st.session_state.setdefault("page", "landing")
 
 
 # ============================================================
-# LANDING PAGE
+# LANDING PAGE (uses a safe link instead of JS)
 # ============================================================
 def show_landing_page():
-
-    # HIDDEN INTERNAL BUTTON (triggered by HTML button)
-    hidden_start = st.button("start_app_internal", key="start_hidden_button")
-
-    if hidden_start:
-        st.session_state.page = "app"
-        st.experimental_rerun()
 
     st.markdown("""
     <div class="landing-container">
@@ -1099,10 +1096,8 @@ def show_landing_page():
             <div class="feature-box">Key insights & takeaways</div>
             <div class="feature-box">Instant PDF report creation</div>
 
-            <button class="glass-button"
-                onclick="document.querySelector('button[aria-label=\\"start_app_internal\\"]').click();">
-                Get Started
-            </button>
+            <!-- Use a plain link with query param; Streamlit will read it on reload -->
+            <a class="glass-link" href="?page=app">Get Started</a>
 
         </div>
 
@@ -1122,7 +1117,7 @@ def show_landing_page():
 
 
 # ============================================================
-# MAIN APP
+# MAIN APP (unchanged behavior)
 # ============================================================
 def show_main_app():
 
@@ -1284,11 +1279,10 @@ def show_main_app():
         st.markdown(f"<div class='small-source'>{res['sources']}</div>", unsafe_allow_html=True)
 
 
-
 # ============================================================
 # ROUTER
 # ============================================================
-if st.session_state.page == "landing":
+if st.session_state.get("page", "landing") == "landing":
     show_landing_page()
 else:
     show_main_app()

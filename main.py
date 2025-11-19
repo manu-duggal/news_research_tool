@@ -738,37 +738,38 @@ st.markdown("""
     }
 
     /* ==========================================
-       LUXURY TABS (NEW)
+       UPDATED LUXURY TABS (ONLY CHANGE)
        ========================================== */
     .stTabs [data-baseweb="tabs"] {
-        gap: 12px !important;
-        padding-bottom: 12px !important;
+        gap: 14px !important;
+        padding-bottom: 14px !important;
     }
 
     .stTabs [data-baseweb="tab"] {
-        background: rgba(255,255,255,0.45);
-        padding: 10px 22px !important;
-        border-radius: 12px !important;
-        border: 1px solid rgba(255,255,255,0.7);
-        backdrop-filter: blur(10px);
+        background: #f0f0f0 !important;
+        padding: 10px 26px !important;
+        border-radius: 14px !important;
+        border: 1px solid #e2e2e2 !important;
+        font-family: "Playfair Display", serif !important;
         font-weight: 600 !important;
-        font-size: 0.95rem !important;
-        color: #6d3bbf !important;
-        box-shadow: 0px 4px 14px rgba(130,60,255,0.15);
+        font-size: 1rem !important;
+        color: #403b4a !important;
+        box-shadow: 0px 4px 14px rgba(0,0,0,0.12);
         transition: all 0.25s ease;
     }
 
     .stTabs [data-baseweb="tab"]:hover {
         transform: translateY(-3px);
-        background: rgba(255,255,255,0.7);
-        box-shadow: 0px 6px 18px rgba(130,60,255,0.25);
+        background: #ffffff !important;
+        box-shadow: 0px 6px 18px rgba(0,0,0,0.18);
     }
 
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
-        color: white !important;
-        border: none !important;
-        box-shadow: 0px 6px 18px rgba(140,50,240,0.35);
+        background: linear-gradient(135deg, #e8e8e8, #ffffff) !important;
+        color: #000000 !important;
+        border: 1px solid #cccccc !important;
+        box-shadow: 0px 6px 20px rgba(0,0,0,0.22);
+        font-weight: 700 !important;
     }
 
     /* ==========================================
@@ -901,7 +902,6 @@ if "summaries" in st.session_state:
     summaries = st.session_state["summaries"]
 
     st.subheader("📝 Article Summaries")
-    st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
     tabs = st.tabs([f"Article {i+1}" for i in range(len(summaries))])
 

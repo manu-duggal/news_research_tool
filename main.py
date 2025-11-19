@@ -103,11 +103,11 @@ if process_url_clicked:
         prompt = f"""
         Provide a structured summary of the following article:
         - 2–3 sentence overview
-        - Five bullet-point key takeaways
+        - Five key takeaways
         - Two key insights or implications
 
 
-        Provide a professional looking structured summary. Keep the 5 bullet points in different lines. Do no mention how many sentences or points you will upload in the final output.
+        Provide a professional looking structured summary. Do no mention how many sentences or points you will upload in the final output.
 
         ARTICLE:
         {content}

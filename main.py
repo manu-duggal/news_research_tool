@@ -1108,8 +1108,7 @@ def show_landing_page():
     </div>
 
 </div>
-""",
-unsafe_allow_html=True)
+""")
     st.stop()
 
 

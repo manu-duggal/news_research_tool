@@ -186,14 +186,13 @@ def generate_pdf_report(summaries):
 
 
 if "summaries" in st.session_state:
-    if st.button("📄 Download PDF Report"):
-        pdf_buffer = generate_pdf_report(st.session_state["summaries"])
-        st.download_button(
-            label="📥 Click to Download PDF",
-            data=pdf_buffer,
-            file_name="news_report.pdf",
-            mime="application/pdf"
-        )
+    pdf_buffer = generate_pdf_report(st.session_state["summaries"])
+    st.download_button(
+        label="📄 Download PDF Report",
+        data=pdf_buffer,
+        file_name="news_report.pdf",
+        mime="application/pdf"
+    )
 
 
 # ============================================================

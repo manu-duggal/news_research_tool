@@ -179,9 +179,8 @@ def generate_pdf_report(summaries):
         clean_summary = article['summary']
         clean_summary = clean_summary.replace("**", "")  # remove markdown bold markers
         clean_summary = clean_summary.replace("\n", "<br/>")  # newlines to HTML breaks
+        
         elements.append(Paragraph(clean_summary, styles["Normal"]))
-
-        elements.append(Paragraph(article['summary'].replace("\n", "<br/>"), styles["Normal"]))
         elements.append(Spacer(1, 20))
 
     doc.build(elements)

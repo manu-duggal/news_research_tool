@@ -2,18 +2,16 @@ import os
 import streamlit as st
 import time
 
-from langchain_groq import ChatGroq
+from langchain_groq import ChatGroq, GroqEmbeddings
 from langchain_classic.chains import RetrievalQAWithSourcesChain
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import UnstructuredURLLoader
-from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import FAISS
 
 
 # ==============================
-# API KEY (move to secrets later)
+# API KEY
 # ==============================
-
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
 
@@ -43,7 +41,7 @@ summary_llm = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0.7,
     groq_api_key=GROQ_API_KEY,
-    max_tokens=700,
+    max_tokens=350,
     timeout=None,
     max_retries=2
 )
@@ -83,9 +81,12 @@ if process_url_clicked:
     main_placeholder.text("✂️ Splitting text into chunks...")
     docs = text_splitter.split_documents(documents=data)
 
-    # 3. FastEmbed (NO TORCH, WINDOWS SAFE)
-    main_placeholder.text("🔢 Generating embeddings using FastEmbed...")
-    embeddings = FastEmbedEmbeddings()
+    # 3. Groq Embeddings (WORKS ON STREAMLIT CLOUD)
+    main_placeholder.text("🔢 Generating embeddings (Groq)…")
+    embeddings = GroqEmbeddings(
+        model="nomic-embed-text",
+        groq_api_key=GROQ_API_KEY
+    )
 
     # 4. Build FAISS Index
     main_placeholder.text("📦 Building FAISS index...")
@@ -146,7 +147,7 @@ if "summaries" in st.session_state:
 
 
 # ============================================================
-# QUESTION ANSWERING SECTION (Uses 70B MODEL)
+# QUESTION ANSWERING SECTION
 # ============================================================
 
 st.subheader("🔍 Ask a Question About the Articles:")
@@ -154,7 +155,10 @@ query = st.text_input("Your Question:")
 
 if query:
 
-    embeddings = FastEmbedEmbeddings()
+    embeddings = GroqEmbeddings(
+        model="nomic-embed-text",
+        groq_api_key=GROQ_API_KEY
+    )
 
     vector_store = FAISS.load_local(
         "faiss_index",

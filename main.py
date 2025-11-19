@@ -4,7 +4,7 @@ import streamlit as st
 from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQAWithSourcesChain
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import BeautifulSoupWebLoader
+from langchain_community.document_loaders import UnstructuredURLLoader
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 
@@ -63,8 +63,8 @@ if process_url_clicked:
         st.warning("Please enter at least one URL.")
         st.stop()
 
-    # 1. Load Data (CLOUD SAFE)
-    loader = BeautifulSoupWebLoader(urls)
+    # 1. Load Data (Unstructured)
+    loader = UnstructuredURLLoader(urls=urls)
     main_placeholder.text("📥 Loading article data...")
     data = loader.load()
 
@@ -81,7 +81,7 @@ if process_url_clicked:
     main_placeholder.text("✂️ Splitting text into chunks...")
     docs = text_splitter.split_documents(documents=data)
 
-    # 3. Embeddings using MiniLM (CLOUD SAFE)
+    # 3. Embeddings using MiniLM (clean & cloud-safe)
     main_placeholder.text("🔢 Generating embeddings…")
     embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 

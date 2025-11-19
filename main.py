@@ -248,59 +248,107 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 
 # ==============================
-#  CUSTOM CSS — (LinkedIn + Notion hybrid)
+#  GRADIENT LUXURY CSS
 # ==============================
 st.markdown("""
 <style>
 
     /* GLOBAL */
     .stApp {
-        background-color: #F8F9FB;
-        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f3e7ff, #e3f0ff, #fdf2ff);
+        background-size: 300% 300%;
+        animation: gradientFlow 12s ease infinite;
+        font-family: "Inter", sans-serif;
     }
 
-    /* HEADERS */
-    h1 {
-        color: #1A1A1A !important;
-        font-weight: 700 !important;
-        padding-bottom: 0.3rem;
-        margin-bottom: 1rem;
+    @keyframes gradientFlow {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
     }
 
-    h2, h3 {
-        color: #1A1A1A !important;
-        font-weight: 600 !important;
+    /* HERO HEADER */
+    .hero {
+        padding: 2.2rem 1rem;
+        border-radius: 18px;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(120,70,255,0.25), rgba(255,100,150,0.25));
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.4);
+        box-shadow: 0px 8px 25px rgba(120,70,255,0.15);
+        margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+        font-size: 2.7rem !important;
+        font-weight: 800 !important;
+        background: linear-gradient(to right, #7936ff, #ff2da5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     /* SIDEBAR */
     [data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #E0E0E0;
+        background: linear-gradient(180deg, #faf5ff, #f7f2ff);
+        border-right: 1px solid rgba(150,150,150,0.2);
     }
 
     .sidebar-title {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         font-weight: 700;
         padding-top: 1rem;
         padding-bottom: 0.5rem;
-        color: #1A1A1A;
+        background: linear-gradient(to right, #7c3aed, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    /* NOTION-STYLE CARDS */
-    .summary-card {
-        background-color: #ffffff;
-        padding: 1.2rem 1.4rem;
+    /* INPUT FIELDS */
+    .stTextInput>div>div>input {
         border-radius: 12px;
-        border: 1px solid #E5E7EB;
-        box-shadow: 0px 1px 3px rgba(0,0,0,0.05);
-        margin-bottom: 1rem;
+        border: 1px solid #d0c8ff;
+        background: rgba(255,255,255,0.7);
+    }
+
+    /* BUTTONS */
+    .stButton>button {
+        background: linear-gradient(135deg, #7c3aed, #d946ef);
+        border: none;
+        padding: 0.7rem 1.4rem;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        box-shadow: 0px 4px 14px rgba(124,58,237,0.4);
+        transition: 0.25s;
+    }
+
+    .stButton>button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 6px 18px rgba(124,58,237,0.55);
+    }
+
+    /* SUMMARY CARDS */
+    .summary-card {
+        background: rgba(255,255,255,0.55);
+        padding: 1.4rem 1.6rem;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.65);
+        backdrop-filter: blur(14px);
+        box-shadow: 0px 6px 22px rgba(150,50,250,0.15);
+        margin-bottom: 1.2rem;
     }
 
     /* DIVIDER */
     .divider {
-        border-top: 1px solid #E5E7EB;
+        border-top: 1px solid rgba(130,60,255,0.4);
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
+    }
+
+    /* TABS */
+    .stTabs [data-baseweb="tab"] {
+        font-weight: 600;
+        color: #6b21a8;
     }
 
 </style>
@@ -314,12 +362,20 @@ GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
 
 # ==============================
-# Streamlit UI
+# HERO HEADER
 # ==============================
-st.title("📰 News Research Tool")
+st.markdown("""
+<div class="hero">
+    <h1>News Research Tool</h1>
+</div>
+""", unsafe_allow_html=True)
 
 st.sidebar.markdown("<div class='sidebar-title'>News Article URLs</div>", unsafe_allow_html=True)
 
+
+# ==============================
+# URL INPUTS
+# ==============================
 urls = []
 for i in range(3):
     url = st.sidebar.text_input(f"Enter URL {i+1}", key=f"url_{i}")
@@ -328,14 +384,12 @@ for i in range(3):
 
 process_url_clicked = st.sidebar.button("Process URLs")
 
-
 main_placeholder = st.empty()
 
 
 # ==============================
 # LLMs
 # ==============================
-
 summary_llm = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0.2,
@@ -354,7 +408,6 @@ qa_llm = ChatGroq(
 # ============================================================
 # PROCESS URLs
 # ============================================================
-
 if process_url_clicked:
 
     if len(urls) == 0:
@@ -374,17 +427,12 @@ if process_url_clicked:
         chunk_overlap=100,
     )
 
-    main_placeholder.text("✂️ Splitting text into chunks...")
     docs = text_splitter.split_documents(documents=data)
 
     embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 
-    main_placeholder.text("📦 Building FAISS index…")
     vector_store = FAISS.from_documents(documents=docs, embedding=embeddings)
-
     vector_store.save_local("faiss_index")
-
-    main_placeholder.text("📝 Generating summaries…")
 
     summaries = []
 
@@ -392,12 +440,11 @@ if process_url_clicked:
         content = article.page_content[:4000]
 
         prompt = f"""
-        Provide a structured summary of the following article:
-        - 2–3 sentence overview
-        - Five key takeaways
-        - Two key insights or implications
+        Provide a structured summary:
+        - Overview
+        - Key takeaways
+        - Key insights
 
-        Provide a professional looking structured summary.
         ARTICLE:
         {content}
         """
@@ -410,7 +457,6 @@ if process_url_clicked:
         })
 
     st.session_state["summaries"] = summaries
-    st.session_state["urls_processed"] = True
 
     main_placeholder.text("✅ Processing Completed!")
 
@@ -418,7 +464,6 @@ if process_url_clicked:
 # ============================================================
 # SHOW SUMMARIES
 # ============================================================
-
 if "summaries" in st.session_state:
 
     summaries = st.session_state["summaries"]
@@ -431,18 +476,16 @@ if "summaries" in st.session_state:
     for idx, tab in enumerate(tabs):
         with tab:
             st.markdown(f"### 🌐 Source: {summaries[idx]['url']}")
-            with st.expander("📄 View Summary", expanded=False):
-                st.markdown(f"""
-                <div class="summary-card">
-                    {summaries[idx]['summary']}
-                </div>
-                """, unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="summary-card">
+                {summaries[idx]['summary']}
+            </div>
+            """, unsafe_allow_html=True)
 
 
 # ============================================================
 # PDF GENERATION
 # ============================================================
-
 def generate_pdf_report(summaries):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
@@ -453,8 +496,10 @@ def generate_pdf_report(summaries):
     elements.append(title)
     elements.append(Spacer(1, 20))
 
-    timestamp = Paragraph(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-                          styles["Normal"])
+    timestamp = Paragraph(
+        f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        styles["Normal"]
+    )
     elements.append(timestamp)
     elements.append(Spacer(1, 20))
 
@@ -463,13 +508,13 @@ def generate_pdf_report(summaries):
         elements.append(Paragraph(f"URL: {article['url']}", styles["Normal"]))
         elements.append(Spacer(1, 10))
 
-        clean_summary = (
-            article['summary']
+        clean = (
+            article["summary"]
             .replace("**", "")
             .replace("\n", "<br/>")
         )
 
-        elements.append(Paragraph(clean_summary, styles["Normal"]))
+        elements.append(Paragraph(clean, styles["Normal"]))
         elements.append(Spacer(1, 20))
 
     doc.build(elements)
@@ -490,7 +535,6 @@ if "summaries" in st.session_state:
 # ============================================================
 # QUESTION ANSWERING
 # ============================================================
-
 st.subheader("🔍 Ask a Question About the Articles:")
 query = st.text_input("Your Question:")
 

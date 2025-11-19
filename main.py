@@ -894,12 +894,17 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 
 # ============================================================
-#  GLOBAL LUXURY STYLING (GRADIENT + GLASS + TABS)
+#  GLOBAL LUXURY STYLING  (GRADIENT + GLASS + TABS + HIDING BUTTON)
 # ============================================================
 st.markdown("""
 <style>
 
-    /* Force black text for all users incl. dark mode */
+    /* Hide the internal Streamlit button */
+    button[aria-label="start_app_internal"] {
+        display: none !important;
+    }
+
+    /* Force black text always */
     html, body, [class*="st-"], .stApp {
         color: #1a1a1a !important;
     }
@@ -911,14 +916,12 @@ st.markdown("""
         animation: gradientFlow 12s ease infinite;
         font-family: "Inter", sans-serif;
     }
-
     @keyframes gradientFlow {
         0% {background-position: 0% 50%;}
         50% {background-position: 100% 50%;}
         100% {background-position: 0% 50%;}
     }
 
-    /* Luxury Sidebar Title */
     .sidebar-title {
         font-size: 1.25rem;
         font-weight: 700;
@@ -931,7 +934,7 @@ st.markdown("""
     .stTextInput>div>div>input {
         border-radius: 12px;
         border: 1px solid #d0c8ff;
-        background: rgba(255,255,255,0.7);
+        background: rgba(255,255,255,0.8);
     }
 
     /* Buttons */
@@ -956,7 +959,7 @@ st.markdown("""
     .summary-card {
         background: rgba(255,255,255,0.55);
         padding: 1.4rem 1.6rem;
-        border-radius: 16px;
+        border-radius: 18px;
         border: 1px solid rgba(255,255,255,0.65);
         backdrop-filter: blur(14px);
         box-shadow: 0px 6px 22px rgba(150,50,250,0.15);
@@ -992,10 +995,7 @@ st.markdown("""
         opacity: 0.85;
     }
 
-    /* =======================================================
-       CINEMATIC LANDING PAGE STYLING
-       ======================================================= */
-
+    /* Landing Page */
     .landing-container {
         height: 90vh;
         display: flex;
@@ -1004,9 +1004,8 @@ st.markdown("""
         flex-direction: column;
         text-align: center;
     }
-
     .landing-hero {
-        background: rgba(255,255,255,0.25);
+        background: rgba(255,255,255,0.30);
         padding: 3rem 3rem;
         width: 70%;
         border-radius: 28px;
@@ -1015,7 +1014,6 @@ st.markdown("""
         box-shadow: 0px 10px 35px rgba(120,50,220,0.18);
         animation: fadeIn 1.2s ease;
     }
-
     .landing-title {
         font-size: 3.3rem !important;
         font-weight: 900 !important;
@@ -1024,13 +1022,11 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
         margin-bottom: 1.2rem;
     }
-
     .landing-subtitle {
         font-size: 1.25rem;
         opacity: 0.8;
         margin-bottom: 2.4rem;
     }
-
     .feature-box {
         background: rgba(255,255,255,0.35);
         backdrop-filter: blur(12px);
@@ -1041,7 +1037,6 @@ st.markdown("""
         margin-bottom: 1rem;
         font-size: 1rem;
     }
-
     .glass-button {
         padding: 0.9rem 2rem;
         border-radius: 14px;
@@ -1072,7 +1067,7 @@ st.markdown("""
 
 
 # ============================================================
-# PAGE CONTROLLER
+# PAGE STATE
 # ============================================================
 if "page" not in st.session_state:
     st.session_state.page = "landing"
@@ -1083,10 +1078,10 @@ if "page" not in st.session_state:
 # ============================================================
 def show_landing_page():
 
-    # Hidden Streamlit button
-    start_btn = st.button("Hidden Start", key="start_hidden_button", type="primary")
+    # HIDDEN INTERNAL BUTTON (triggered by HTML button)
+    hidden_start = st.button("start_app_internal", key="start_hidden_button")
 
-    if start_btn:
+    if hidden_start:
         st.session_state.page = "app"
         st.experimental_rerun()
 
@@ -1106,13 +1101,12 @@ def show_landing_page():
             <div class="feature-box">Instant PDF report creation</div>
 
             <button class="glass-button"
-                onclick="document.querySelector('button[kind=primary]').click();">
+                onclick="document.querySelector('button[aria-label=\'start_app_internal\']').click();">
                 Get Started
             </button>
 
         </div>
 
-        <!-- FOOTER -->
         <div style="
             text-align:center;
             margin-top:40px;
@@ -1148,7 +1142,6 @@ def show_main_app():
 
     st.sidebar.markdown("<div class='sidebar-title'>News Article URLs</div>", unsafe_allow_html=True)
 
-    # URL inputs
     urls = []
     for i in range(3):
         u = st.sidebar.text_input(f"Enter URL {i+1}", key=f"url_{i}")
@@ -1158,7 +1151,6 @@ def show_main_app():
     process_clicked = st.sidebar.button("Process URLs")
     main_area = st.empty()
 
-    # LLMs
     summary_llm = ChatGroq(
         model="llama-3.1-8b-instant",
         temperature=0.2,
@@ -1173,7 +1165,6 @@ def show_main_app():
         max_tokens=500
     )
 
-    # PROCESS ARTICLES
     if process_clicked:
         if len(urls) == 0:
             st.warning("Please enter at least one URL.")
@@ -1222,10 +1213,7 @@ def show_main_app():
         st.session_state["summaries"] = summaries
         main_area.text("✅ Processing Completed!")
 
-
-    # SHOW SUMMARIES
     if "summaries" in st.session_state:
-
         sums = st.session_state["summaries"]
         st.subheader("Article Summaries")
 
@@ -1236,8 +1224,6 @@ def show_main_app():
                 st.markdown(f"#### Source: {sums[idx]['url']}")
                 st.markdown(f"<div class='summary-card'>{sums[idx]['summary']}</div>", unsafe_allow_html=True)
 
-
-    # PDF GENERATOR
     def make_pdf(summaries):
         buf = BytesIO()
         doc = SimpleDocTemplate(buf, pagesize=letter)
@@ -1273,8 +1259,6 @@ def show_main_app():
             mime="application/pdf"
         )
 
-
-    # Q&A
     st.subheader("Ask a Question About the Articles:")
     q = st.text_input("Your Question:")
 
@@ -1299,7 +1283,6 @@ def show_main_app():
 
         st.subheader("Sources:")
         st.markdown(f"<div class='small-source'>{res['sources']}</div>", unsafe_allow_html=True)
-
 
 
 # ============================================================

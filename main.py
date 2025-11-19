@@ -8,6 +8,10 @@ from langchain_community.document_loaders import UnstructuredURLLoader
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+
 
 # ==============================
 # API KEY (from Streamlit secrets)
@@ -144,6 +148,50 @@ if "summaries" in st.session_state:
             st.markdown(f"### 🌐 Source: {summaries[idx]['url']}")
             with st.expander("📄 View Summary", expanded=False):
                 st.write(summaries[idx]["summary"])
+
+
+# ============================================================
+# PDF REPORT GENERATOR (STYLE A: CLEAN PROFESSIONAL)
+# ============================================================
+
+def generate_pdf_report(summaries):
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    styles = getSampleStyleSheet()
+    elements = []
+
+    title = Paragraph("<b>News Research Report</b>", styles["Title"])
+    elements.append(title)
+    elements.append(Spacer(1, 20))
+
+    timestamp = Paragraph(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+                          styles["Normal"])
+    elements.append(timestamp)
+    elements.append(Spacer(1, 20))
+
+    for idx, article in enumerate(summaries):
+        elements.append(Paragraph(f"<b>Article {idx+1}</b>", styles["Heading2"]))
+        elements.append(Paragraph(f"URL: {article['url']}", styles["Normal"]))
+        elements.append(Spacer(1, 10))
+
+        elements.append(Paragraph("<b>Summary</b>", styles["Heading3"]))
+        elements.append(Paragraph(article['summary'].replace("\n", "<br/>"), styles["Normal"]))
+        elements.append(Spacer(1, 20))
+
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
+
+
+if "summaries" in st.session_state:
+    if st.button("📄 Download PDF Report"):
+        pdf_buffer = generate_pdf_report(st.session_state["summaries"])
+        st.download_button(
+            label="📥 Click to Download PDF",
+            data=pdf_buffer,
+            file_name="news_report.pdf",
+            mime="application/pdf"
+        )
 
 
 # ============================================================

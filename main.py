@@ -1033,7 +1033,7 @@ st.markdown("""
         box-shadow: 0px 6px 16px rgba(120,50,220,0.15);
         font-size: 1rem;
     }
-    .glass-button, .glass-link {
+    .glass-link {
         display: inline-block;
         text-decoration: none;
         padding: 0.9rem 2rem;
@@ -1049,7 +1049,7 @@ st.markdown("""
         margin-top: 1rem;
         box-shadow: 0px 8px 20px rgba(120,50,220,0.3);
     }
-    .glass-button:hover, .glass-link:hover {
+    .glass-link:hover {
         transform: translateY(-4px);
         background: rgba(255,255,255,0.45);
         box-shadow: 0px 10px 28px rgba(120,50,220,0.45);
@@ -1065,59 +1065,57 @@ st.markdown("""
 
 
 # ============================================================
-# PAGE STATE via query params (robust)
+# PAGE STATE ROUTING
 # ============================================================
-# If user navigates to ?page=app, use that to set session state.
 params = st.experimental_get_query_params()
 if "page" in params and params["page"] and params["page"][0] == "app":
     st.session_state["page"] = "app"
 elif "page" not in st.session_state:
-    # preserve existing session behavior if not provided
     st.session_state.setdefault("page", "landing")
 
 
 # ============================================================
-# LANDING PAGE (uses a safe link instead of JS)
+# LANDING PAGE  (PATCHED)
 # ============================================================
 def show_landing_page():
+    st.markdown(
+"""
+<div class="landing-container">
 
-    st.markdown("""
-    <div class="landing-container">
+    <div class="landing-hero">
 
-        <div class="landing-hero">
+        <div class="landing-title">News Research Tool</div>
 
-            <div class="landing-title">News Research Tool</div>
-
-            <div class="landing-subtitle">
-                AI-powered summaries, insights, and research for long-form news articles.
-            </div>
-
-            <div class="feature-box">Smart automated summarization</div>
-            <div class="feature-box">Key insights & takeaways</div>
-            <div class="feature-box">Instant PDF report creation</div>
-
-            <!-- Use a plain link with query param; Streamlit will read it on reload -->
-            <a class="glass-link" href="?page=app">Get Started</a>
-
+        <div class="landing-subtitle">
+            AI-powered summaries, insights, and research for long-form news articles.
         </div>
 
-        <div style="
-            text-align:center;
-            margin-top:40px;
-            opacity:0.75;
-            font-family:'Playfair Display', serif;
-            font-size:1rem;">
-            Made with ❤️ by <b>MD</b>
-        </div>
+        <div class="feature-box">Smart automated summarization</div>
+        <div class="feature-box">Key insights & takeaways</div>
+        <div class="feature-box">Instant PDF report creation</div>
+
+        <a class="glass-link" href="?page=app">Get Started</a>
 
     </div>
-    """, unsafe_allow_html=True)
 
+    <div style="
+        text-align:center;
+        margin-top:40px;
+        opacity:0.75;
+        font-family:'Playfair Display', serif;
+        font-size:1rem;">
+        Made with ❤️ by <b>MD</b>
+    </div>
+
+</div>
+""",
+unsafe_allow_html=True)
     st.stop()
 
 
+
 # ============================================================
-# MAIN APP (unchanged behavior)
+# MAIN APPLICATION
 # ============================================================
 def show_main_app():
 
@@ -1277,6 +1275,7 @@ def show_main_app():
 
         st.subheader("Sources:")
         st.markdown(f"<div class='small-source'>{res['sources']}</div>", unsafe_allow_html=True)
+
 
 
 # ============================================================

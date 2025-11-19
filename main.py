@@ -1078,37 +1078,57 @@ elif "page" not in st.session_state:
 # LANDING PAGE  (PATCHED)
 # ============================================================
 def show_landing_page():
-    st.html(
-"""
-<div class="landing-container">
+    st.html("""
+<div style="
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    width:100%;
+    padding:0;
+    margin:0;
+">
 
-    <div class="landing-hero">
+    <div class="landing-hero" style="
+        width: 90%;
+        max-width: 700px;
+        padding: 3rem 2.5rem;
+        border-radius: 28px;
+        text-align: center;
+    ">
 
-        <div class="landing-title">News Research Tool</div>
+        <div class="landing-title" style="margin-bottom: 1rem;">
+            News Research Tool
+        </div>
 
-        <div class="landing-subtitle">
+        <div class="landing-subtitle" style="margin-bottom: 2rem;">
             AI-powered summaries, insights, and research for long-form news articles.
         </div>
 
-        <div class="feature-box">Smart automated summarization</div>
-        <div class="feature-box">Key insights & takeaways</div>
-        <div class="feature-box">Instant PDF report creation</div>
+        <div class="feature-box" style="margin-bottom: 1rem;">Smart automated summarization</div>
+        <div class="feature-box" style="margin-bottom: 1rem;">Key insights & takeaways</div>
+        <div class="feature-box" style="margin-bottom: 2rem;">Instant PDF report creation</div>
 
-        <a class="glass-link" href="?page=app">Get Started</a>
+        <a class="glass-link" href="?page=app" style="margin-top:1rem;">
+            Get Started
+        </a>
 
     </div>
 
     <div style="
         text-align:center;
-        margin-top:40px;
+        margin-top:28px;
         opacity:0.75;
         font-family:'Playfair Display', serif;
-        font-size:1rem;">
+        font-size:1rem;
+    ">
         Made with ❤️ by <b>MD</b>
     </div>
 
 </div>
 """)
+
     st.stop()
 
 

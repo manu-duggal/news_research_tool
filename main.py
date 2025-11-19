@@ -1,16 +1,16 @@
 import os
 import streamlit as st
-import time
 
-from langchain_groq import ChatGroq, GroqEmbeddings
+from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQAWithSourcesChain
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import UnstructuredURLLoader
+from langchain_community.document_loaders import BeautifulSoupWebLoader
 from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import SentenceTransformerEmbeddings
 
 
 # ==============================
-# API KEY
+# API KEY (from Streamlit secrets)
 # ==============================
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
@@ -36,24 +36,20 @@ main_placeholder = st.empty()
 # LLMs
 # ==============================
 
-# 1️⃣ Cheap & Fast model for SUMMARIES
+# 1️⃣ Summaries LLM — cheap & fast
 summary_llm = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0.7,
     groq_api_key=GROQ_API_KEY,
-    max_tokens=350,
-    timeout=None,
-    max_retries=2
+    max_tokens=350
 )
 
-# 2️⃣ Most powerful model for QA
+# 2️⃣ Q&A LLM — powerful
 qa_llm = ChatGroq(
     model="llama-3.3-70b-versatile",
     temperature=0.7,
     groq_api_key=GROQ_API_KEY,
-    max_tokens=500,
-    timeout=None,
-    max_retries=2
+    max_tokens=500
 )
 
 
@@ -67,10 +63,14 @@ if process_url_clicked:
         st.warning("Please enter at least one URL.")
         st.stop()
 
-    # 1. Load Data
-    loader = UnstructuredURLLoader(urls=urls)
+    # 1. Load Data (CLOUD SAFE)
+    loader = BeautifulSoupWebLoader(urls)
     main_placeholder.text("📥 Loading article data...")
     data = loader.load()
+
+    # Clean up text content
+    for d in data:
+        d.page_content = d.page_content.strip()
 
     # 2. Split Data
     text_splitter = RecursiveCharacterTextSplitter(
@@ -81,33 +81,30 @@ if process_url_clicked:
     main_placeholder.text("✂️ Splitting text into chunks...")
     docs = text_splitter.split_documents(documents=data)
 
-    # 3. Groq Embeddings (WORKS ON STREAMLIT CLOUD)
-    main_placeholder.text("🔢 Generating embeddings (Groq)…")
-    embeddings = GroqEmbeddings(
-        model="nomic-embed-text",
-        groq_api_key=GROQ_API_KEY
-    )
+    # 3. Embeddings using MiniLM (CLOUD SAFE)
+    main_placeholder.text("🔢 Generating embeddings…")
+    embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 
     # 4. Build FAISS Index
-    main_placeholder.text("📦 Building FAISS index...")
+    main_placeholder.text("📦 Building FAISS index…")
     vector_store = FAISS.from_documents(documents=docs, embedding=embeddings)
 
-    # 5. Save FAISS Index
+    # 5. Save FAISS index
     vector_store.save_local("faiss_index")
 
-    # 6. Generate Summaries Using CHEAP LLM
-    main_placeholder.text("📝 Generating article summaries...")
+    # 6. Summaries
+    main_placeholder.text("📝 Generating summaries…")
 
     summaries = []
 
     for i, article in enumerate(data):
-        content = article.page_content[:4000]  # safe token limit
+        content = article.page_content[:4000]
 
         prompt = f"""
-        Provide a well-structured summary of the following news article with:
-        - A 2–3 sentence overview  
-        - Five bullet-point key takeaways  
-        - Three key insights or implications  
+        Provide a structured summary of the following article:
+        - 2–3 sentence overview
+        - Five bullet-point key takeaways
+        - Three key insights or implications
 
         ARTICLE:
         {content}
@@ -120,15 +117,15 @@ if process_url_clicked:
             "summary": response.content
         })
 
-    # SAVE SUMMARIES TO SESSION STATE
+    # Save summaries to session_state so they don't disappear
     st.session_state["summaries"] = summaries
     st.session_state["urls_processed"] = True
 
-    main_placeholder.text("✅ Processing + Summaries Completed!")
+    main_placeholder.text("✅ Processing Completed!")
 
 
 # ============================================================
-# SHOW SUMMARIES IF THEY EXIST
+# SHOW SUMMARIES IF PRESENT
 # ============================================================
 
 if "summaries" in st.session_state:
@@ -147,7 +144,7 @@ if "summaries" in st.session_state:
 
 
 # ============================================================
-# QUESTION ANSWERING SECTION
+# QUESTION ANSWERING
 # ============================================================
 
 st.subheader("🔍 Ask a Question About the Articles:")
@@ -155,10 +152,7 @@ query = st.text_input("Your Question:")
 
 if query:
 
-    embeddings = GroqEmbeddings(
-        model="nomic-embed-text",
-        groq_api_key=GROQ_API_KEY
-    )
+    embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 
     vector_store = FAISS.load_local(
         "faiss_index",

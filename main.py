@@ -610,16 +610,14 @@ st.markdown("""
 <style>
 
     /* ==========================================
-       GLOBAL DARK MODE FIX (IMPORTANT)
+       DARK MODE FIX (FORCE TEXT DARK)
        ========================================== */
     html, body, [class*="st-"], .stApp {
         color: #1a1a1a !important;
     }
-
     p, div, span, label, h1, h2, h3, h4, h5, h6 {
         color: #1a1a1a !important;
     }
-
     @media (prefers-color-scheme: dark) {
         html, body, [class*="st-"], .stApp,
         p, div, span, label, h1, h2, h3, h4, h5, h6 {
@@ -627,9 +625,8 @@ st.markdown("""
         }
     }
 
-
     /* ==========================================
-       GLOBAL BACKGROUND GRADIENT
+       BACKGROUND GRADIENT
        ========================================== */
     .stApp {
         background: linear-gradient(135deg, #f3e7ff, #e3f0ff, #fdf2ff);
@@ -657,7 +654,6 @@ st.markdown("""
         box-shadow: 0px 8px 25px rgba(120,70,255,0.15);
         margin-bottom: 2rem;
     }
-
     .hero h1 {
         font-size: 2.7rem !important;
         font-weight: 800 !important;
@@ -673,7 +669,6 @@ st.markdown("""
         background: linear-gradient(180deg, #faf5ff, #f7f2ff);
         border-right: 1px solid rgba(150,150,150,0.2);
     }
-
     .sidebar-title {
         font-size: 1.25rem;
         font-weight: 700;
@@ -685,7 +680,7 @@ st.markdown("""
     }
 
     /* ==========================================
-       INPUT FIELDS
+       INPUT STYLING
        ========================================== */
     .stTextInput>div>div>input {
         border-radius: 12px;
@@ -694,7 +689,7 @@ st.markdown("""
     }
 
     /* ==========================================
-       PRIMARY BUTTONS
+       LUXURY GRADIENT BUTTONS
        ========================================== */
     .stButton>button {
         background: linear-gradient(135deg, #7c3aed, #d946ef);
@@ -706,14 +701,13 @@ st.markdown("""
         box-shadow: 0px 4px 14px rgba(124,58,237,0.4);
         transition: 0.25s;
     }
-
     .stButton>button:hover {
         transform: translateY(-3px);
         box-shadow: 0px 6px 18px rgba(124,58,237,0.55);
     }
 
     /* ==========================================
-       DOWNLOAD BUTTON (Same Luxury Look)
+       DOWNLOAD BUTTON MATCHING STYLE
        ========================================== */
     .stDownloadButton>button {
         background: linear-gradient(135deg, #7c3aed, #d946ef);
@@ -725,14 +719,13 @@ st.markdown("""
         box-shadow: 0px 4px 14px rgba(124,58,237,0.4);
         transition: 0.25s;
     }
-
     .stDownloadButton>button:hover {
         transform: translateY(-3px);
         box-shadow: 0px 6px 18px rgba(124,58,237,0.55);
     }
 
     /* ==========================================
-       SUMMARY CARD (Glassmorphism)
+       SUMMARY CARDS
        ========================================== */
     .summary-card {
         background: rgba(255,255,255,0.55);
@@ -745,16 +738,41 @@ st.markdown("""
     }
 
     /* ==========================================
-       DIVIDER
+       LUXURY TABS (NEW)
        ========================================== */
-    .divider {
-        border-top: 1px solid rgba(130,60,255,0.4);
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
+    .stTabs [data-baseweb="tabs"] {
+        gap: 12px !important;
+        padding-bottom: 12px !important;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        background: rgba(255,255,255,0.45);
+        padding: 10px 22px !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(255,255,255,0.7);
+        backdrop-filter: blur(10px);
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        color: #6d3bbf !important;
+        box-shadow: 0px 4px 14px rgba(130,60,255,0.15);
+        transition: all 0.25s ease;
+    }
+
+    .stTabs [data-baseweb="tab"]:hover {
+        transform: translateY(-3px);
+        background: rgba(255,255,255,0.7);
+        box-shadow: 0px 6px 18px rgba(130,60,255,0.25);
+    }
+
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0px 6px 18px rgba(140,50,240,0.35);
     }
 
     /* ==========================================
-       SOURCE TEXT (Subtle, Small)
+       SMALL SOURCE TEXT
        ========================================== */
     .small-source {
         font-size: 0.82rem;
@@ -764,6 +782,7 @@ st.markdown("""
 
 </style>
 """, unsafe_allow_html=True)
+
 
 
 # ==============================
@@ -814,6 +833,7 @@ qa_llm = ChatGroq(
     groq_api_key=GROQ_API_KEY,
     max_tokens=500
 )
+
 
 
 # ============================================================
@@ -872,6 +892,7 @@ if process_url_clicked:
     main_placeholder.text("✅ Processing Completed!")
 
 
+
 # ============================================================
 # SHOW SUMMARIES
 # ============================================================
@@ -892,6 +913,7 @@ if "summaries" in st.session_state:
                 {summaries[idx]['summary']}
             </div>
             """, unsafe_allow_html=True)
+
 
 
 # ============================================================
@@ -941,6 +963,7 @@ if "summaries" in st.session_state:
         file_name="news_report.pdf",
         mime="application/pdf"
     )
+
 
 
 # ============================================================

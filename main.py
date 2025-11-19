@@ -253,7 +253,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 st.markdown("""
 <style>
 
-    /* GLOBAL */
+    /* GLOBAL BACKGROUND GRADIENT */
     .stApp {
         background: linear-gradient(135deg, #f3e7ff, #e3f0ff, #fdf2ff);
         background-size: 300% 300%;
@@ -310,7 +310,7 @@ st.markdown("""
         background: rgba(255,255,255,0.7);
     }
 
-    /* BUTTONS */
+    /* LUXURY BUTTONS */
     .stButton>button {
         background: linear-gradient(135deg, #7c3aed, #d946ef);
         border: none;
@@ -327,7 +327,24 @@ st.markdown("""
         box-shadow: 0px 6px 18px rgba(124,58,237,0.55);
     }
 
-    /* SUMMARY CARDS */
+    /* DOWNLOAD BUTTON MATCHING UI */
+    .stDownloadButton>button {
+        background: linear-gradient(135deg, #7c3aed, #d946ef);
+        border: none;
+        padding: 0.7rem 1.4rem;
+        border-radius: 12px;
+        color: white !important;
+        font-weight: 600;
+        box-shadow: 0px 4px 14px rgba(124,58,237,0.4);
+        transition: 0.25s;
+    }
+
+    .stDownloadButton>button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 6px 18px rgba(124,58,237,0.55);
+    }
+
+    /* SUMMARY CARD */
     .summary-card {
         background: rgba(255,255,255,0.55);
         padding: 1.4rem 1.6rem;
@@ -345,10 +362,11 @@ st.markdown("""
         margin-bottom: 1.5rem;
     }
 
-    /* TABS */
-    .stTabs [data-baseweb="tab"] {
-        font-weight: 600;
-        color: #6b21a8;
+    /* SMALL SOURCE TEXT */
+    .small-source {
+        font-size: 0.82rem;
+        color: #5a4a70;
+        opacity: 0.85;
     }
 
 </style>
@@ -559,4 +577,7 @@ if query:
     st.write(result["answer"])
 
     st.subheader("Sources:")
-    st.write(result["sources"])
+    st.markdown(
+        f"<div class='small-source'>{result['sources']}</div>",
+        unsafe_allow_html=True
+    )

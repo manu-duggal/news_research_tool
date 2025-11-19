@@ -107,8 +107,8 @@ if process_url_clicked:
         - Two key insights or implications
 
 
-        Provide a professional looking structured summary
-        
+        Provide a professional looking structured summary. Keep the bullet point in different lines and do no mention how many sentences or points you will upload in the final output.
+
         ARTICLE:
         {content}
         """

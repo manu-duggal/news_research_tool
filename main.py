@@ -39,9 +39,9 @@ main_placeholder = st.empty()
 # 1️⃣ Summaries LLM — cheap & fast
 summary_llm = ChatGroq(
     model="llama-3.1-8b-instant",
-    temperature=0.7,
+    temperature=0.2,
     groq_api_key=GROQ_API_KEY,
-    max_tokens=350
+    max_tokens=500
 )
 
 # 2️⃣ Q&A LLM — powerful
@@ -107,7 +107,7 @@ if process_url_clicked:
         - Two key insights or implications
 
 
-        Provide a professional looking structured summary. Keep the bullet point in different lines and do no mention how many sentences or points you will upload in the final output.
+        Provide a professional looking structured summary. Keep the 5 bullet points in different lines. Do no mention how many sentences or points you will upload in the final output.
 
         ARTICLE:
         {content}

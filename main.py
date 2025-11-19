@@ -104,8 +104,11 @@ if process_url_clicked:
         Provide a structured summary of the following article:
         - 2–3 sentence overview
         - Five bullet-point key takeaways
-        - Three key insights or implications
+        - Two key insights or implications
 
+
+        Provide a professional looking structured summary
+        
         ARTICLE:
         {content}
         """
